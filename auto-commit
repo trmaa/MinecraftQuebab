@@ -1,0 +1,24 @@
+#! /bin/sh
+
+# auto-commit-daemon.sh
+# Script que corre en segundo plano haciendo commits periódicos
+
+REPO_PATH="."
+BRANCH="main"
+INTERVALO_SEGUNDOS=21200  # 12 horas (12 * 60 * 60)
+
+cd "$REPO_PATH" || exit 1
+
+while :; do
+        if git status --porcelain | grep -q .; then
+                echo "[$(date '+%Y-%m-%d %H:%M:%S')] Realizando commit automático..."
+                git add .
+                git commit -m "Auto-commit: $(date '+%Y-%m-%d %H:%M:%S')"
+                git push
+                echo "[$(date '+%Y-%m-%d %H:%M:%S')] Push completado"
+        else
+                echo "[$(date '+%Y-%m-%d %H:%M:%S')] Sin cambios"
+        fi
+
+        sleep "$INTERVALO_SEGUNDOS"
+done
